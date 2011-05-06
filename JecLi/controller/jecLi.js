@@ -223,3 +223,7 @@
 		return false;
 	}
 }()).onInclude();
+
+window.onload = function(){
+	JecLi.onLoad();
+}
