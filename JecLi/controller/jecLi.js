@@ -1,6 +1,5 @@
 /**
-* @author 		tobias schmalenberg <team@jecedelic-software.de>
-* @copyright 	Jecedelic Software
+* @author 	tobias schmalenberg <team@jecedelic-software.de>
 */
 
 
@@ -9,12 +8,12 @@
 		/**
 		* register private Vars
 		*/
-		var jl_baseURL				/*:String */ = '';
-		var jl_systemPath			/*:String */ = 'jecLi_preAlpha.js';
+		var jl_baseURL			/*:String */ = '';
+		var jl_systemPath		/*:String */ = 'jecLi_preAlpha.js';
 		var jl_defaultPluginList	/*:String */ = 'controller/PluginList.dat';
 		
 		var jl_fileRequester		/*:Object */ = new Object();
-		var jl_pluginList			/*:Object */ = new Object();
+		var jl_pluginList		/*:Object */ = new Object();
 		
 		
 		/**
@@ -124,9 +123,9 @@
 		* @access	private
 		*/
 		var jl_setBaseUrl = function(){
-			var jl_Head			/*:Array  */ = [];
+			var jl_Head		/*:Array  */ = [];
 			var jl_HeadLenght	/*:Integer*/ = 0;
-			var jl_Path			/*:String */ = '';
+			var jl_Path		/*:String */ = '';
 			
 			jl_Head = document.getElementsByTagName('head');
 			jl_Head = jl_Head[0];
@@ -150,7 +149,7 @@
 		*/
 		var jl_crawlDOM = function(jl_rootNode/*:DOMNode*/){
 			var jl_htmlCollection	/*:HTMLCollection*/ = jl_rootNode.all ? jl_rootNode.all : jl_rootNode.getElementsByTagName('*');
-			var i					/*:Integer*/ 		= jl_htmlCollection.length;
+			var i				/*:Integer*/ 		= jl_htmlCollection.length;
 			
 			while(i --> 0) {
 				var jl_pluginName	/*:String */ 		= jl_htmlCollection[i].getAttribute('plugin');

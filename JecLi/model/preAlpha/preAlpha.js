@@ -4,12 +4,9 @@ preAlpha = function(){
 	var description = {
 		Title 		: "preAlpha",
 		Version		: "0.2",
-		Date		: "26.02.2009",
-		
 		Autor		: "Tobias Schmalenberg",
-		URI			: "http://jecli.jecedelic-software.de",
 		
-		dependence	: 'preAlpha',
+		dependence	: false,
 		useTemplate	: false
 	}
 	
@@ -93,6 +90,7 @@ preAlpha = function(){
 		}
 		return pos;
 	}
+
 	/* PUBLIC */
 	return {
 		onLoad			: function(){
