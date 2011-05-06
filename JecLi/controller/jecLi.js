@@ -9,7 +9,7 @@
 		* register private Vars
 		*/
 		var jl_baseURL			/*:String */ = '';
-		var jl_systemPath		/*:String */ = 'jecLi_preAlpha.js';
+		var jl_systemPath		/*:String */ = 'controller/jecLi.js';
 		var jl_defaultPluginList	/*:String */ = 'controller/PluginList.dat';
 		
 		var jl_fileRequester		/*:Object */ = new Object();

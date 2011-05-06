@@ -7,7 +7,7 @@ preAlpha = function(){
 		Autor		: "Tobias Schmalenberg",
 		
 		dependence	: false,
-		useTemplate	: false
+		useTemplate	: true
 	}
 	
 	/* PRIVATE */
