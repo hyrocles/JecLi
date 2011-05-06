@@ -1,0 +1,3 @@
+PluginList = {
+	preAlpha			: "preAlpha/preAlpha.js"
+}
