@@ -1,0 +1,4 @@
+{
+	examplePlugin1		: "examplePlugin1/examplePlugin1.js",
+	examplePlugin2		: "examplePlugin2/examplePlugin2.js"
+}

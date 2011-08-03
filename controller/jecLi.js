@@ -10,7 +10,7 @@
 		*/
 		var jl_baseURL			/*:String */ = '';
 		var jl_systemPath		/*:String */ = 'controller/jecLi.js';
-		var jl_defaultPluginList	/*:String */ = 'controller/PluginList.dat';
+		var jl_defaultPluginList	/*:String */ = 'controller/PluginList.json';
 		
 		var jl_fileRequester		/*:Object */ = new Object();
 		var jl_pluginList		/*:Object */ = new Object();
@@ -19,13 +19,33 @@
 		/**
 		* Sets all extern and intern closures until DOM is loaded
 		* @access	private
-		* @see		jl_createFileRequester(), jl_createPluginList(), jl_setBaseUrl()
+		* @see		jl_createFileRequester(), jl_createPluginList(), jl_setBaseUrl(), jl_setOnLoad()
 		*/
 		var jl_init = function(){
 			JecLi = window.JecLi || {};
-			jl_setBaseUrl()
+			jl_setOnLoad();
+			jl_setBaseUrl();
 			jl_createFileRequester();
 			jl_createPluginList();
+		}
+		
+		/**
+		* set or rewrite the "window.onload"-Event ... I'll try to find another way at next time.
+		* <body onload="..."> or any later window.onload break this part but you need to call JecLi.onLoad();
+		* @access	private
+		*/
+		var jl_setOnLoad = function(){
+			var tempOnLoad	=	window.onload;
+			if(!tempOnLoad){
+				window.onload = function(){
+					JecLi.onLoad();
+				}
+			}else{
+				window.onload = function(){
+					tempOnLoad();
+					JecLi.onLoad();
+				}
+			}
 		}
 		
 		/**
@@ -33,6 +53,7 @@
 		* @access	private
 		*/
 		var jl_createFileRequester = function(){
+			alert(location.protocol)
 			if(window.ActiveXObject){
 				try{
 					jl_fileRequester = new ActiveXObject("Microsoft.XMLHTTP");
@@ -40,7 +61,7 @@
 					jl_fileRequester = new ActiveXObject("Msxml2.XMLHTTP");
 				}
 			}else if(window.XMLHttpRequest){
-				jl_fileRequester = new XMLHttpRequest();
+				jl_fileRequester = new XMLHttpRequest;
 			}else{
 				jl_fileRequester = false;
 			}
@@ -73,7 +94,7 @@
 				}
 				
 				try{
-					eval('var '+PluginListFile);
+					eval('var PluginList = '+PluginListFile);
 					for(var x in PluginList){
 						jl_pluginList[x.toLowerCase()] = new jl_Plugin(PluginList[x], x);
 					}
@@ -97,7 +118,7 @@
 					jl_fileRequester.open('POST', jl_filePath, false);
 					jl_fileRequester.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 					jl_fileRequester.send(null);
-					return jl_fileRequester.responseText;;
+					return jl_fileRequester.responseText;
 				}catch(e){
 					return false;
 				}
@@ -182,11 +203,29 @@
 						JecLi[PLUGIN.realName] = tempPlugin();
 						if(JecLi[PLUGIN.realName].onLoad()){
 							jl_pluginList[jl_pluginName].loaded = true;
+							
+							/**
+							* check Plugin use Template and load it ondemand
+							*/
 							if(JecLi[PLUGIN.realName].getDescription().useTemplate){
 								jl_pluginCss = document.createElement('link');
 								jl_pluginCss.setAttribute('rel','stylesheet');
 								jl_pluginCss.setAttribute('href', jl_baseURL+'view/'+PLUGIN.path.replace('.js','.css'));
 								jl_docHead.insertBefore(jl_pluginCss, jl_docHead.firstChild);
+							}
+							
+							/**
+							* check Plugin for dependence
+							*/
+							if(JecLi[PLUGIN.realName].getDescription().dependence){
+								var jl_tempDepArray		/*:Array  */ = JecLi[PLUGIN.realName].getDescription().dependence.split(',');
+								var jl_tempDepArray_len	/*:Integer*/ = jl_tempDepArray.length;
+								for(var x=jl_tempDepArray_len; x--;){
+									if(!jl_loadPlugin(jl_tempDepArray[x].replace(/ /gi,''))){
+										jl_pluginList[jl_pluginName].loadingErr = true;
+										return false;
+									}
+								}
 							}
 						}else{
 							jl_pluginList[jl_pluginName].loadingErr = true;
@@ -215,6 +254,17 @@
 				jl_init();
 			},
 			
+			addPlugin	: function(pluginName/*:String*/, rootNode/*:DOMNode*/){
+				if(pluginName){
+					if(!rootNode){
+						rootNode = false;
+					}
+					return jl_loadPlugin(pluginName/*:String*/, rootNode/*:DOMNode*/);
+				}else{
+					return false;
+				}
+			},
+			
 			onLoad		: function(){
 				return load();
 			}
@@ -223,7 +273,3 @@
 		return false;
 	}
 }()).onInclude();
-
-window.onload = function(){
-	JecLi.onLoad();
-}
