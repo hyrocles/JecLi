@@ -8,7 +8,7 @@
 		/**
 		* register private Vars
 		*/
-		var jl_baseURL			/*:String */ = '';
+		var jl_baseURL			/*:String */ = 'JecLi/';
 		var jl_systemPath		/*:String */ = 'controller/jecLi.js';
 		var jl_defaultPluginList	/*:String */ = 'controller/PluginList.json';
 		
@@ -30,8 +30,8 @@
 		}
 		
 		/**
-		* set or rewrite the "window.onload"-Event ... I'll try to find another way at next time.
-		* <body onload="..."> or any later window.onload break this part but you need to call JecLi.onLoad();
+		* set or rewrite the "window.onload"-Event ... (!!! yet it is an experiment !!!).
+		* <body onload="..."> or any later window.onload break this part but you can use JecLi.crawlContent(rootNode:DOMNode);
 		* @access	private
 		*/
 		var jl_setOnLoad = function(){
@@ -42,8 +42,8 @@
 				}
 			}else{
 				window.onload = function(){
-					tempOnLoad();
 					JecLi.onLoad();
+					tempOnLoad();
 				}
 			}
 		}
@@ -53,7 +53,12 @@
 		* @access	private
 		*/
 		var jl_createFileRequester = function(){
-			alert(location.protocol)
+			if(!location.protocol ==="file:"){
+				if(window.XMLHttpRequest){
+					jl_fileRequester = new XMLHttpRequest;
+					return;
+				}
+			}
 			if(window.ActiveXObject){
 				try{
 					jl_fileRequester = new ActiveXObject("Microsoft.XMLHTTP");
@@ -144,22 +149,26 @@
 		* @access	private
 		*/
 		var jl_setBaseUrl = function(){
-			var jl_Head		/*:Array  */ = [];
-			var jl_HeadLenght	/*:Integer*/ = 0;
-			var jl_Path		/*:String */ = '';
-			
-			jl_Head = document.getElementsByTagName('head');
-			jl_Head = jl_Head[0];
-			jl_HeadLenght = jl_Head.childNodes.length;
-			
-			for(var x=jl_HeadLenght; x--;){
-				if(jl_Head.childNodes[x].src){
-					jl_Path = jl_Head.childNodes[x].src;
-					if(jl_Path.indexOf(jl_systemPath) != -1){
-						jl_baseURL = jl_Path.replace(jl_systemPath,'');
-						return true;
+			if(jl_baseURL == ""){
+				var jl_Head		/*:Array  */ = [];
+				var jl_HeadLenght	/*:Integer*/ = 0;
+				var jl_Path		/*:String */ = '';
+				
+				jl_Head = document.getElementsByTagName('head');
+				jl_Head = jl_Head[0];
+				jl_HeadLenght = jl_Head.childNodes.length;
+				
+				for(var x=jl_HeadLenght; x--;){
+					if(jl_Head.childNodes[x].src){
+						jl_Path = jl_Head.childNodes[x].src;
+						if(jl_Path.indexOf(jl_systemPath) != -1){
+							jl_baseURL = jl_Path.replace(jl_systemPath,'');
+							return true;
+						}
 					}
 				}
+			}else{
+				return true;
 			}
 		}
 		
@@ -174,7 +183,6 @@
 			
 			while(i --> 0) {
 				var jl_pluginName	/*:String */ 		= jl_htmlCollection[i].getAttribute('plugin');
-				
 				if(typeof jl_pluginName !== 'string'){
 					continue;
 				}
@@ -263,6 +271,10 @@
 				}else{
 					return false;
 				}
+			},
+			
+			crawlContent	: function(rootNode/*:DOMNode*/){
+				jl_crawlDOM(rootNode);
 			},
 			
 			onLoad		: function(){
