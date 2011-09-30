@@ -8,7 +8,7 @@
 		/**
 		* register private Vars
 		*/
-		var jl_baseURL			/*:String */ = 'JecLi/';
+		var jl_baseURL			/*:String */ = '';
 		var jl_systemPath		/*:String */ = 'controller/jecLi.js';
 		var jl_defaultPluginList	/*:String */ = 'controller/PluginList.json';
 		
@@ -274,7 +274,12 @@
 			},
 			
 			crawlContent	: function(rootNode/*:DOMNode*/){
-				jl_crawlDOM(rootNode);
+				if(rootNode){
+					jl_crawlDOM(rootNode);
+					return true;
+				}else{
+					return false;
+				}
 			},
 			
 			onLoad		: function(){
