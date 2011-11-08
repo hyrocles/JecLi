@@ -15,6 +15,8 @@
 		var jl_fileRequester		/*:Object */ = new Object();
 		var jl_pluginList		/*:Object */ = new Object();
 		
+		var jl_serialization	/*:Boolean*/ = true;
+		
 		
 		/**
 		* Sets all extern and intern closures until DOM is loaded
@@ -24,8 +26,8 @@
 		var jl_init = function(){
 			JecLi = window.JecLi || {};
 			jl_setOnLoad();
-			jl_setBaseUrl();
 			jl_createFileRequester();
+			jl_setBaseUrl();
 			jl_createPluginList();
 		}
 		
@@ -73,10 +75,49 @@
 		}
 		
 		/**
+		* check and load preferences for serialization.
+		* @access	private
+		*/
+		var jl_getPrefs = function(){
+			var jl_tempPref 		/*:String */ = '';
+			var jl_tempPrefArray	/*:Array  */ = new Array();
+			
+			if(document.cookie){
+				try{
+					jl_tempPref = document.cookie;
+					jl_tempPrefArray = jl_tempPref.split('=');
+					if(jl_tempPrefArray[0] == 'jl_prefValue'){
+						return jl_tempPrefArray[1];
+					}
+				}catch(e){
+					/* ERRORCODE - jl_getPrefs damaged */
+					return false;
+				}
+			}
+			return false;
+		}
+		
+		/**
+		* save preferences for serialization.
+		* @access	private
+		*/
+		var jl_setPrefs = function(jl_prefValue/*:String */){
+			if(jl_prefValue && jl_serialization){
+				var jl_newPref 		= new Function("", "try{jl_str='jl_prefValue="+escape(jl_prefValue)+"';return jl_str;}catch(e){return false;}");
+				var jl_newPrefSize 	= jl_newPref().length * 2;
+				
+				if(jl_newPrefSize < 3500){
+					document.cookie = jl_newPref();
+					return true;
+				}
+			}
+		}
+		
+		/**
 		* creates a list of all available plugins and provide this list available internally
 		* @access	private
 		* @param 	string 	jl_filePath
-		* @see		jl_getFile()
+		* @see		jl_getFile(), jl_setPrefs(), jl_getPrefs()
 		*/
 		var jl_createPluginList = function(jl_filePath/*:String */){
 			var PluginListFile		/*:String */ = '';
@@ -85,8 +126,14 @@
 				jl_filePath = jl_defaultPluginList;
 			}
 			
-			if(PluginListFile = jl_getFile(jl_baseURL+jl_filePath)){
-				
+			PluginListFile = unescape(jl_getPrefs());
+			if(PluginListFile == "false"){
+				if(PluginListFile = jl_getFile(jl_baseURL+jl_filePath)){
+					jl_setPrefs(PluginListFile);
+				}
+			}
+			
+			if(PluginListFile){
 				/**
 				* PluginList Template Object
 				*/
