@@ -15,7 +15,7 @@
 		var jl_fileRequester		/*:Object */ = new Object();
 		var jl_pluginList		/*:Object */ = new Object();
 		
-		var jl_serialization	/*:Boolean*/ = true;
+		var jl_serialization		/*:Boolean*/ = true;
 		
 		
 		/**
@@ -80,9 +80,9 @@
 		*/
 		var jl_getPrefs = function(){
 			var jl_tempPref 		/*:String */ = '';
-			var jl_tempPrefArray	/*:Array  */ = new Array();
+			var jl_tempPrefArray		/*:Array  */ = new Array();
 			
-			if(document.cookie){
+			if(document.cookie && jl_serialization){
 				try{
 					jl_tempPref = document.cookie;
 					jl_tempPrefArray = jl_tempPref.split('=');
