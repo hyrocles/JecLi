@@ -270,6 +270,11 @@
 							}
 							
 							/**
+							* ToDo:
+							* implementation XUL/HTML Template
+							*/
+							
+							/**
 							* check Plugin for dependence
 							*/
 							if(JecLi[PLUGIN.realName].getDescription().dependence){
