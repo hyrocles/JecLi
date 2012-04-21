@@ -33,6 +33,10 @@ examplePlugin2 = function(){
 			return description.Title + ' -> onInclude';
 		},
 		
+		onComplete		: function(){
+			alert('onComplete > examplePlugin2');
+		},
+		
 		getDescription	: function(){
 			return description;
 		}
