@@ -257,13 +257,13 @@
                     if(tempPlugin){
                         var tempPlugin = new Function("", "try{return "+tempPlugin+";}catch(e){return false;}");
                         JecLi[PLUGIN.realName] = tempPlugin();
-                        if(JecLi[PLUGIN.realName].onLoad()){
+                        if(jl_callPlugin(PLUGIN.realName, "onLoad")){
                             jl_pluginList[jl_pluginName].loaded = true;
                             
                             /**
                             * check Plugin use Template and load it ondemand
                             */
-                            if(JecLi[PLUGIN.realName].getDescription().useTemplate){
+                            if(jl_callPlugin(PLUGIN.realName, "getDescription").useTemplate){
                                 jl_pluginCss = document.createElement('link');
                                 jl_pluginCss.setAttribute('rel','stylesheet');
                                 jl_pluginCss.setAttribute('href', jl_baseURL+'view/'+PLUGIN.path.replace('.js','.css'));
@@ -278,8 +278,8 @@
                             /**
                             * check Plugin for dependence
                             */
-                            if(JecLi[PLUGIN.realName].getDescription().dependence){
-                                var jl_tempDepArray        /*:Array  */ = JecLi[PLUGIN.realName].getDescription().dependence.split(',');
+                            if(jl_callPlugin(PLUGIN.realName, "getDescription").dependence){
+                                var jl_tempDepArray        /*:Array  */ = jl_callPlugin(PLUGIN.realName, "getDescription").dependence.split(',');
                                 var jl_tempDepArray_len    /*:Integer*/ = jl_tempDepArray.length;
                                 for(var x=jl_tempDepArray_len; x--;){
                                     if(!jl_loadPlugin(jl_tempDepArray[x].replace(/ /gi,''))){
@@ -301,7 +301,7 @@
                     }
                 }
                 if(jl_rootNode){
-                    JecLi[PLUGIN.realName].onInclude(jl_rootNode);
+                    jl_callPlugin(PLUGIN.realName, "onInclude", jl_rootNode);
                 }
                 return true;
             }else{
@@ -318,10 +318,10 @@
         var jl_onComplete = function(){
             for(x in jl_pluginList){
                 if(jl_pluginList[x].loaded == true){
-                var PLUGIN           /*:Object */ = jl_pluginList[x];
-                    
+					var PLUGIN           /*:Object */ = jl_pluginList[x];
+				
                     try{
-                        JecLi[PLUGIN.realName].onComplete();
+						jl_callPlugin(PLUGIN.realName, "onComplete");
                     }catch(e/*:ErrorObject*/){
                         /* ERRORCODE - Plugin no onComplete */ 
                     }
@@ -329,6 +329,32 @@
             }
         }
         
+        /**
+        * Calls as the only method in all JecLi plugin methods.
+        * @access    private
+        */
+		var jl_callPlugin = function(jl_pluginName/*:String*/, jl_pluginFunction/*:String*/, jl_pluginFunctionArgs/*:undefined*/){
+			try{
+				if(jl_pluginFunction && jl_pluginName){
+					if(!jl_pluginFunctionArgs){
+						var jl_pluginFunctionArgs = '';
+					}
+					
+					switch(jl_pluginFunction){
+						case 'onComplete':
+						case 'onInclude':
+						case 'onLoad':
+						case 'getDescription':
+							return JecLi[jl_pluginName][jl_pluginFunction](jl_pluginFunctionArgs);
+						default:
+							return false;
+					}
+				}
+			}catch(e/*:ErrorObject*/){
+				return false;
+			}
+		}
+		
         /**
         * register public Functions
         */

@@ -7,7 +7,7 @@ examplePlugin2 = function(){
 		Autor		: "Tobias Schmalenberg",
 		
 		dependence	: "examplePlugin1",
-		useTemplate	: false
+		useTemplate	: true
 	}
 	
 	/* PRIVATE */
@@ -15,11 +15,16 @@ examplePlugin2 = function(){
 	/* - private - vars */
 	
 	/* - private - methodes */
-	
-	var setOnClick = function(object_o){
-		object_o.onclick = function(){
+	var addButton = function(object_o){
+		var _button = document.createElement('button');
+		_button.appendChild(document.createTextNode('include examplePlugin1'));
+		
+		_button.onclick = function(){
 			alert(JecLi.examplePlugin1.onInclude());
 		}
+		
+		object_o.appendChild(_button);
+		object_o.className = description.Title;
 	}
 	
 	/* PUBLIC */
@@ -29,7 +34,7 @@ examplePlugin2 = function(){
 		},
 		
 		onInclude		: function(object_o){
-			setOnClick(object_o);
+			addButton(object_o);
 			return description.Title + ' -> onInclude';
 		},
 		
