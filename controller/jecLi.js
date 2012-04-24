@@ -16,6 +16,7 @@
         var jl_pluginList           /*:Object */ = new Object();
         
         var jl_serialization        /*:Boolean*/ = true;
+        var jl_allowPBSyntax        /*:Boolean*/ = true;
         
         
         /**
@@ -255,6 +256,7 @@
                 if(!PLUGIN.loaded){
                     var tempPlugin = jl_getFile(jl_baseURL+'model/'+PLUGIN.path);
                     if(tempPlugin){
+						tempPlugin = jl_pbObj.jl_search(tempPlugin, PLUGIN);
                         var tempPlugin = new Function("", "try{return "+tempPlugin+";}catch(e){return false;}");
                         JecLi[PLUGIN.realName] = tempPlugin();
                         if(jl_callPlugin(PLUGIN.realName, "onLoad")){
@@ -352,6 +354,42 @@
 				}
 			}catch(e/*:ErrorObject*/){
 				return false;
+			}
+		}
+		
+        /**
+        * Allow to use PBSyntax in Plugins [experiment!]
+        * @access    private
+        */
+		var jl_pbObj = {
+			jl_search : function(pluginCode, pluginObj){
+				var pb_pattern = /@jecLi:[^]*?(;)/gm
+				var pb_codeSnips = pluginCode.match(pb_pattern);
+				
+				if(pb_codeSnips && jl_allowPBSyntax){
+					for(var x in pb_codeSnips){
+						var tempSnipe = pb_codeSnips[x].replace(/@jecLi:/gi,'').replace(/ /gi,'').replace(/;/gi,'');
+						var tempSnipe = tempSnipe.split('=');
+						
+						switch(tempSnipe[0]){
+							case 'import':
+								var tempSnipe_new = jl_getFile(jl_baseURL+'model/'+pluginObj.realName+'/'+tempSnipe[1]);
+								if(!tempSnipe_new){
+									tempSnipe_new = '';
+								}
+								pluginCode = pluginCode.replace(new RegExp(pb_codeSnips[x],"gi"), tempSnipe_new);
+							
+							default:
+								pluginCode = pluginCode.replace(new RegExp(pb_codeSnips[x],"gi"), '');
+						}
+					}
+				}
+				if(!jl_allowPBSyntax){
+					for(var x in pb_codeSnips){
+						pluginCode = pluginCode.replace(new RegExp(pb_codeSnips[x],"gi"), '');
+					}
+				}
+				return pluginCode;
 			}
 		}
 		

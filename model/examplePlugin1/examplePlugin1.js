@@ -1,5 +1,8 @@
 examplePlugin1 = function(){
-
+	
+	/* File import */
+	@jecLi:import = bin/test1.js;
+	
 	/* - description - */
 	var description = {
 		Title 		: "examplePlugin1",
@@ -8,7 +11,7 @@ examplePlugin1 = function(){
 		
 		dependence	: false,
 		useTemplate	: false
-	}
+	}	
 	
 	/* PRIVATE */
 	
@@ -27,7 +30,7 @@ examplePlugin1 = function(){
 		},
 		
 		onComplete		: function(){
-			alert('onComplete > examplePlugin1');
+			msg('onComplete > examplePlugin1');
 		},
 		
 		getDescription	: function(){
